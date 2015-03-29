@@ -16,10 +16,6 @@ class ViewController: UIViewController {
 
     var initLocation = CGPoint()
     var foldView = UIView()
-    var foldShadow = CAGradientLayer()
-    var anotherShadow = CAGradientLayer()
-    let upShadow = CAGradientLayer()
-    let downShadow = CAGradientLayer()
     
     override func viewDidLoad()
     {
@@ -32,16 +28,6 @@ class ViewController: UIViewController {
             
             upView.layer.anchorPoint = CGPointMake(0.5, 1)
             downView.layer.anchorPoint = CGPointMake(0.5, 0)
-            
-            upShadow.frame = upView.bounds
-            upShadow.colors = [UIColor.clearColor().CGColor, UIColor.blackColor().CGColor]
-            upShadow.opacity = 0
-            upView.layer.addSublayer(upShadow)
-            
-            downShadow.frame = downView.bounds
-            downShadow.colors = [UIColor.blackColor().CGColor, UIColor.clearColor().CGColor]
-            downShadow.opacity = 0
-            downView.layer.addSublayer(downShadow)
         }
     }
     
@@ -61,16 +47,12 @@ class ViewController: UIViewController {
             if isinitLocationWithinUp()
             {
                 foldView = upView
-                foldShadow = upShadow
-                anotherShadow = downShadow
                 upView.layer.zPosition = 100
                 downView.layer.zPosition = 0
             }
             else
             {
                 foldView = downView
-                foldShadow = downShadow
-                anotherShadow = upShadow
                 upView.layer.zPosition = 0
                 downView.layer.zPosition = 100
             }
@@ -82,8 +64,6 @@ class ViewController: UIViewController {
             {
                 CATransaction.begin()
                 CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-                foldShadow.opacity = 0.0
-                anotherShadow.opacity = abs(Float((location.y-initLocation.y)/(CGRectGetHeight(containerView.bounds)-initLocation.y)))
                 CATransaction.commit()
             }
             else
@@ -91,8 +71,6 @@ class ViewController: UIViewController {
                 CATransaction.begin()
                 CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
                 let opacity = abs((location.y-initLocation.y)/(CGRectGetHeight(containerView.bounds)-initLocation.y))
-                foldShadow.opacity = Float(opacity)
-                anotherShadow.opacity = Float(opacity)
                 CATransaction.commit()
             }
         }
@@ -144,8 +122,6 @@ class ViewController: UIViewController {
     {
         UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
                 self.transform3d(layer, angle: 0)
-                self.upShadow.opacity = 0
-                self.downShadow.opacity = 0
             }){if $0{}}
     }
     
