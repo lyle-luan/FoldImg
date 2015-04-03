@@ -16,6 +16,9 @@ class ViewController: UIViewController {
 
     var initLocation = CGPoint()
     var foldView = UIView()
+    let shadowBegin = CAGradientLayer()
+    let shadowEnd = CAGradientLayer()
+    
     
     override func viewDidLoad()
     {
@@ -28,6 +31,16 @@ class ViewController: UIViewController {
             
             upView.layer.anchorPoint = CGPointMake(0.5, 1)
             downView.layer.anchorPoint = CGPointMake(0.5, 0)
+            
+            shadowBegin.frame = downView.bounds
+            shadowBegin.colors = [UIColor.clearColor().CGColor, UIColor(patternImage: hasDogImg).CGColor]
+            shadowBegin.opacity = 0
+            downView.layer.addSublayer(shadowBegin)
+            
+            shadowEnd.frame = downView.bounds
+            shadowEnd.colors = [UIColor(patternImage: hasDogImg).CGColor, UIColor.clearColor().CGColor]
+            shadowEnd.opacity = 0
+            downView.layer.addSublayer(shadowEnd)
         }
     }
     
@@ -58,22 +71,24 @@ class ViewController: UIViewController {
             }
         }
         
-        if let rotationValue = foldView.layer.valueForKeyPath("transform.rotation.x")?.floatValue
+        if foldView == upView
         {
-            if abs(rotationValue) < Float(M_PI_2)
+            if let rotationValue = foldView.layer.valueForKeyPath("transform.rotation.x")?.floatValue
             {
-                CATransaction.begin()
-                CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-                CATransaction.commit()
-            }
-            else
-            {
-                CATransaction.begin()
-                CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-                let opacity = abs((location.y-initLocation.y)/(CGRectGetHeight(containerView.bounds)-initLocation.y))
-                CATransaction.commit()
+                if abs(rotationValue) < Float(M_PI_2)
+                {
+                    let opacity = abs((location.y-initLocation.y)/(CGRectGetHeight(containerView.bounds)-initLocation.y))
+                    shadowBegin.opacity = Float(opacity)
+                    shadowEnd.opacity = 0
+                }
+                else
+                {
+                    let opacity = abs((location.y-initLocation.y)/(CGRectGetHeight(containerView.bounds)-initLocation.y))
+                    shadowEnd.opacity = Float(opacity)
+                }
             }
         }
+        
         
         if (isLocation(location, inView: containerView))
         {
@@ -122,6 +137,8 @@ class ViewController: UIViewController {
     {
         UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
                 self.transform3d(layer, angle: 0)
+                self.shadowBegin.opacity = 0
+                self.shadowEnd.opacity = 0
             }){if $0{}}
     }
     
